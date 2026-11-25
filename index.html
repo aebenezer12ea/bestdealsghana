@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Best Deals Ghana</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+body{background:#f4f6f4}
+#splash{position:fixed;top:0;left:0;width:100%;height:100%;background:#0a7a42;color:white;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;text-align:center;padding:20px}
+#splash h1{font-size:36px;margin-bottom:10px}
+#loginBox{position:fixed;top:0;left:0;width:100%;height:100%;background:#f4f6f4;display:none;align-items:center;justify-content:center;padding:20px;z-index:99}
+.login-card{background:white;width:100%;max-width:380px;padding:22px;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,.1)}
+.login-card h2{text-align:center;margin-bottom:6px}
+.login-card p{text-align:center;color:#777;font-size:13px;margin-bottom:14px}
+input,select{width:100%;padding:13px;margin:8px 0;border:1px solid #ddd;border-radius:10px;font-size:15px}
+.btn{width:100%;padding:13px;border:none;border-radius:10px;font-weight:bold;margin-top:10px;cursor:pointer}
+.btn-green{background:#0a7a42;color:white}
+header{background:#0a7a42;color:white;padding:16px;text-align:center}
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:10px 15px;background:white}
+.card{background:white;margin:15px;border-radius:14px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.card img{width:100%;height:200px;object-fit:cover}
+.card-body{padding:14px}
+.section{background:white;margin:15px;padding:16px;border-radius:14px}
+.hidden{display:none!important}
+.admin-box{background:#111;color:white;padding:16px;border-radius:12px;margin:15px}
+.stat{background:white;padding:14px;border-radius:12px;margin:10px 15px;display:flex;justify-content:space-between}
+</style>
+</head>
+<body>
+
+<div id="splash"><h1>Best Deals Ghana</h1><p>Buy Land Without Being Scammed</p><p style="margin-top:20px;font-size:13px">Loading...</p></div>
+
+<div id="loginBox">
+<div class="login-card">
+<h2>Welcome to Best Deals</h2><p>Login or Create Account to continue</p>
+<div id="loginForm">
+<input id="loginPhone" placeholder="Phone e.g. 0551234567">
+<input id="loginPass" type="password" placeholder="Password">
+<button class="btn btn-green" onclick="doLogin()">LOGIN</button>
+<p style="margin-top:12px">No account? <a href="#" onclick="showSignup();return false;">Create Account</a></p>
+</div>
+<div id="signupForm" class="hidden">
+<input id="suName" placeholder="Full Name">
+<input id="suPhone" placeholder="Phone e.g. 0551234567">
+<input id="suPass" type="password" placeholder="Create Password">
+<select id="suType"><option value="Buyer">I want to BUY land</option><option value="Seller">I want to SELL land</option></select>
+<button class="btn btn-green" onclick="doSignup()">CREATE ACCOUNT</button>
+<p style="margin-top:12px">Have account? <a href="#" onclick="showLogin();return false;">Login</a></p>
+</div>
+<p id="msg" style="color:red;font-size:13px;text-align:center"></p>
+</div>
+</div>
+
+<div id="mainSite" class="hidden">
+<header><h1>Best Deals Ghana</h1><p>Buy Land Without Being Scammed - Safe Payment - Verified</p></header>
+<div class="topbar"><span id="welcomeText">Welcome</span><button onclick="doLogout()" style="padding:8px 14px;border:none;border-radius:8px;background:#eee;font-weight:bold">Logout</button></div>
+<div class="card"><img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800"><div class="card-body"><h2>Full Plot - East Legon Hills</h2><p>GHS 30,000 - Documented - Green Verified</p><button class="btn btn-green">Buy with Safe Payment</button></div></div>
+<div class="card"><img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800"><div class="card-body"><h2>Half Plot - Kasoa</h2><p>GHS 12,000 - Undocumented - Yellow Badge</p><button class="btn" style="background:#ffc107">Contact Seller Directly</button></div></div>
+<div class="section"><h2>Verification</h2><p>Lands Commission Search - GHS 400<br>Zoning Check - GHS 200<br>Agreement - GHS 400<br><b>Full Package - GHS 900</b></p><input placeholder="Your Name"><input placeholder="Phone"><button class="btn btn-green">Request Verification</button></div>
+<div class="section"><h2>Sell Your Land</h2><select><option>DOCUMENTED - GHS 50 + 5%</option><option>UNDOCUMENTED - GHS 100</option></select><input placeholder="Location"><input placeholder="Price"><button class="btn btn-green">Submit Listing</button></div>
+<footer style="text-align:center;padding:20px;color:#777">2026 Best Deals Ghana</footer>
+</div>
+
+<div id="adminSite" class="hidden">
+<header><h1>Best Deals - ADMIN</h1><p>Owner Dashboard - Only You Can See This</p></header>
+<div class="topbar"><span>Welcome, Owner</span><button onclick="doLogout()" style="padding:8px 14px;border:none;border-radius:8px;background:#eee;font-weight:bold">Logout</button></div>
+<div class="admin-box"><h3>Owner Controls</h3><p style="font-size:13px;opacity:.8;margin-top:6px">You are logged in as Admin. Normal users cannot see this page.</p></div>
+<div class="stat"><span>Total Users Signed Up</span><b id="totalUsers">0</b></div>
+<div class="stat"><span>Total Listings</span><b>2</b></div>
+<div class="stat"><span>Verification Requests</span><b>0</b></div>
+<div class="section"><h2>All Users</h2><div id="userList"><p style="color:#777">No users yet</p></div></div>
+<div class="section"><h2>Approve Listings</h2><p>East Legon Hills - GHS 30,000 - <b style="color:green">Approved</b></p><p style="margin-top:8px">Kasoa - GHS 12,000 - <b style="color:orange">Pending Review</b></p><button class="btn btn-green">Approve All</button></div>
+<div class="section"><h2>Admin Actions</h2><button class="btn btn-green" onclick="alert('You can edit the website in Tiiny')">Edit Website</button><button class="btn" style="background:#eee" onclick="showMainSiteFromAdmin()">View Site As Customer</button></div>
+</div>
+
+<script>
+window.onload=function(){
+  setTimeout(function(){
+    document.getElementById('splash').style.display='none';
+    let user = localStorage.getItem('bdg_user');
+    if(user){
+      let u=JSON.parse(user);
+      if(u.phone==='adminEA'){showAdmin();} else {showMain(u.name);}
+    } else {
+      document.getElementById('loginBox').style.display='flex';
+    }
+  },2000);
+};
+function showSignup(){document.getElementById('loginForm').classList.add('hidden');document.getElementById('signupForm').classList.remove('hidden');}
+function showLogin(){document.getElementById('signupForm').classList.add('hidden');document.getElementById('loginForm').classList.remove('hidden');}
+function doSignup(){
+  let name=document.getElementById('suName').value;
+  let phone=document.getElementById('suPhone').value;
+  let pass=document.getElementById('suPass').value;
+  let type=document.getElementById('suType').value;
+  if(!name||!phone||!pass){document.getElementById('msg').innerText='Please fill all fields';return;}
+  let user={name:name,phone:phone,pass:pass,type:type};
+  localStorage.setItem('bdg_user_'+phone, JSON.stringify(user));
+  localStorage.setItem('bdg_user', JSON.stringify(user));
+  showMain(name);
+}
+function doLogin(){
+  let phone=document.getElementById('loginPhone').value;
+  let pass=document.getElementById('loginPass').value;
+  if(phone==='adminEA' && pass==='bestdeals2195'){
+    let admin={name:'Owner',phone:'adminEA',pass:'bestdeals2195',type:'Admin'};
+    localStorage.setItem('bdg_user', JSON.stringify(admin));
+    showAdmin();
+    return;
+  }
+  let saved=localStorage.getItem('bdg_user_'+phone);
+  if(!saved){document.getElementById('msg').innerText='No account found. Please Create Account first.';return;}
+  let user=JSON.parse(saved);
+  if(user.pass!==pass){document.getElementById('msg').innerText='Wrong password';return;}
+  localStorage.setItem('bdg_user', JSON.stringify(user));
+  showMain(user.name);
+}
+function showMain(name){
+  document.getElementById('loginBox').style.display='none';
+  document.getElementById('adminSite').classList.add('hidden');
+  document.getElementById('mainSite').classList.remove('hidden');
+  document.getElementById('welcomeText').innerText='Welcome, '+name;
+}
+function showAdmin(){
+  document.getElementById('loginBox').style.display='none';
+  document.getElementById('mainSite').classList.add('hidden');
+  document.getElementById('adminSite').classList.remove('hidden');
+  let count=0; let html='';
+  for(let i=0;i<localStorage.length;i++){
+    let k=localStorage.key(i);
+    if(k && k.indexOf('bdg_user_')===0){
+      let u=JSON.parse(localStorage.getItem(k));
+      count++; html+='<p>'+u.name+' - '+u.phone+' - '+u.type+'</p>';
+    }
+  }
+  document.getElementById('totalUsers').innerText=count;
+  if(html){document.getElementById('userList').innerHTML=html;}
+}
+function showMainSiteFromAdmin(){
+  document.getElementById('adminSite').classList.add('hidden');
+  document.getElementById('mainSite').classList.remove('hidden');
+  document.getElementById('welcomeText').innerText='Viewing as Customer (Admin)';
+}
+function doLogout(){
+  localStorage.removeItem('bdg_user');
+  location.reload();
+}
+</script>
+</body>
+</html>
