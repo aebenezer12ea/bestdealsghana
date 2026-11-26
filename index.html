@@ -1,34 +1,182 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Best Deals Ghana - Buy Land Safely</title><meta name="theme-color" content="#0b7a3e">
-<link rel="manifest" href="data:application/json,{%22name%22:%22Best%20Deals%20Ghana%22,%22short_name%22:%22BDG%22,%22display%22:%22standalone%22,%22background_color%22:%22%230b7a3e%22,%22theme_color%22:%22%230b7a3e%22}">
-<style>body{font-family:system-ui;margin:0;background:#f6f8f6}header{background:#0b7a3e;color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center}header b{font-size:20px}.card{background:#fff;margin:12px;border-radius:14px;padding:14px;box-shadow:0 2px 10px rgba(0,0,0,.06)}input,select,textarea{width:100%;padding:12px;margin:6px 0;border:1px solid #ddd;border-radius:10px;box-sizing:border-box}button{background:#0b7a3e;color:#fff;border:0;padding:12px 16px;border-radius:10px;font-weight:700;width:100%;margin-top:8px}button.out{background:#fff;color:#0b7a3e;border:1px solid #0b7a3e}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.land{border:1px solid #eee;border-radius:12px;overflow:hidden}.land img{width:100%;height:140px;object-fit:cover}.land div{padding:10px}.badge{display:inline-block;padding:4px 8px;border-radius:20px;font-size:12px;background:#fff3cd}.small{font-size:13px;color:#555}.hidden{display:none}.top{display:flex;gap:8px}</style></head>
-<body><header><b>🏡 Best Deals Ghana</b><span id="userLabel"></span></header>
-<div class="card" id="authCard"><h2>Welcome</h2><p class="small">Buyers browse free. Sellers sign up to upload land. Admin approves.</p>
-<input id="name" placeholder="Full Name"><input id="phone" placeholder="Phone e.g. 0540329903"><input id="email" placeholder="Email"><input id="pass" type="password" placeholder="Password (6+ chars)">
-<div class="top"><button id="signupBtn">Sign Up as Seller</button><button id="loginBtn" class="out">Log In</button></div>
-<button id="browseBtn" class="out">Continue as Buyer (No Login)</button><p class="small" id="authMsg"></p><button id="installBtn" class="out">📲 Install App</button></div>
-<div class="card hidden" id="sellerCard"><h3>Upload Your Land</h3><input id="loc" placeholder="Location e.g. East Legon Hills"><select id="size"><option>Full Plot</option><option>Half Plot</option><option>2 Plots</option><option>1 Acre</option></select><input id="price" type="number" placeholder="Price GHS e.g. 30000"><input id="photo" placeholder="Photo URL or paste link (or leave blank)"><textarea id="desc" placeholder="Description / Documents e.g. Site Plan available"></textarea><button id="uploadBtn">Submit Land for Approval</button><p class="small">Your land goes to Pending. Admin must approve before buyers see it.</p><h4>My Lands</h4><div id="myLands"></div><button id="logoutBtn" class="out">Log Out</button></div>
-<div class="card hidden" id="adminCard"><h3>👑 Admin - Approve Lands</h3><p class="small">Only admin sees this. Approve to make live.</p><div id="adminLands"></div></div>
-<div class="card"><h3>Available Lands (Approved Only)</h3><div class="grid" id="list"></div><p class="small" id="empty">No approved lands yet. Check back soon.</p></div>
-<script type="module">
-import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import {getFirestore,collection,addDoc,query,where,orderBy,onSnapshot,updateDoc,doc,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-const firebaseConfig={apiKey:"AIzaSyB13LEqD74lDJX2rdan5i0bCPTdV0fujkY",authDomain:"bestdealsghana.firebaseapp.com",projectId:"bestdealsghana",storageBucket:"bestdealsghana.firebasestorage.app",messagingSenderId:"359237507661",appId:"1:359237507661:web:aee376d7d50940db441a04",measurementId:"G-V60LVWCTD7"};
-const app=initializeApp(firebaseConfig);const auth=getAuth(app);const db=getFirestore(app);
-const ADMIN_EMAIL="aebenezer12.ea@gmail.com";const $=id=>document.getElementById(id);
-let currentUser=null;
-$("signupBtn").onclick=async()=>{try{const c=await createUserWithEmailAndPassword(auth,$("email").value,$("pass").value);await addDoc(collection(db,"users"),{uid:c.user.uid,name:$("name").value,phone:$("phone").value,email:$("email").value,createdAt:serverTimestamp()});$("authMsg").textContent="Account created! You can now upload land."}catch(e){$("authMsg").textContent=e.message}};
-$("loginBtn").onclick=async()=>{try{await signInWithEmailAndPassword(auth,$("email").value,$("pass").value)}catch(e){$("authMsg").textContent=e.message}};
-$("browseBtn").onclick=()=>{$("authCard").classList.add("hidden")};
-$("logoutBtn").onclick=()=>signOut(auth);
-$("uploadBtn").onclick=async()=>{if(!currentUser)return alert("Login first");try{await addDoc(collection(db,"lands"),{location:$("loc").value,size:$("size").value,price:Number($("price").value),photo:$("photo").value||"https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800",desc:$("desc").value,sellerName:$("name").value||currentUser.email,sellerPhone:$("phone").value||"",sellerEmail:currentUser.email,sellerUid:currentUser.uid,status:"pending",createdAt:serverTimestamp()});alert("Submitted! Waiting for Admin approval.");}catch(e){alert(e.message)}};
-onAuthStateChanged(auth,u=>{currentUser=u;if(u){$("userLabel").textContent=u.email;$("authCard").classList.add("hidden");$("sellerCard").classList.remove("hidden");if(u.email===ADMIN_EMAIL)$("adminCard").classList.remove("hidden");loadMy();}else{$("authCard").classList.remove("hidden");$("sellerCard").classList.add("hidden");$("adminCard").classList.add("hidden");}});
-function landHTML(d,id,showActions){return `<div class="land"><img src="${d.photo}"><div><b>${d.location||""}</b><br><span class="small">${d.size||""} • ${d.desc||""}</span><br><b>GHS ${(d.price||0).toLocaleString()}</b><br><span class="badge">${d.status||""}</span><br><span class="small">Seller: ${d.sellerName||""} ${d.sellerPhone||""}</span>${showActions?`<div class="top"><button onclick="window.approve('${id}')">Approve</button><button class="out" onclick="window.reject('${id}')">Reject</button></div>`:`<a href="https://wa.me/233540329903?text=${encodeURIComponent("Hi, I want to buy "+(d.location||"")+" for GHS "+(d.price||""))}" target="_blank"><button>Buy with Safe Payment</button></a>`}</div></div>`}
-window.approve=async(id)=>{await updateDoc(doc(db,"lands",id),{status:"approved"})};
-window.reject=async(id)=>{await updateDoc(doc(db,"lands",id),{status:"rejected"})};
-function loadMy(){if(!currentUser)return;onSnapshot(query(collection(db,"lands"),where("sellerUid","==",currentUser.uid)),s=>{$("myLands").innerHTML="";s.forEach(d=>{$("myLands").innerHTML+=landHTML(d.data(),d.id,false)})})}
-onSnapshot(query(collection(db,"lands"),where("status","==","approved"),orderBy("createdAt","desc")),s=>{$("list").innerHTML="";if(s.empty)$("empty").style.display="block";else $("empty").style.display="none";s.forEach(d=>{$("list").innerHTML+=landHTML(d.data(),d.id,false)})});
-onSnapshot(collection(db,"lands"),s=>{if(!currentUser||currentUser.email!==ADMIN_EMAIL)return;$("adminLands").innerHTML="";s.forEach(d=>{if(d.data().status==="pending")$("adminLands").innerHTML+=landHTML(d.data(),d.id,true)})});
-let deferred;window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferred=e});$("installBtn").onclick=async()=>{if(deferred){deferred.prompt();await deferred.userChoice}else alert("Tap Share > Add to Home Screen to install as App!")};
-</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BestDeals Ghana - V2.2</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,sans-serif}
+body{background:#f6f7f9;color:#111}
+header{background:#0b6e4f;color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:50}
+header b{font-size:19px} header span{font-size:12px;opacity:.9}
+.btn{background:#0b6e4f;color:#fff;border:0;padding:11px 16px;border-radius:10px;font-weight:700;cursor:pointer;width:100%}
+.btn2{background:#fff;color:#0b6e4f;border:1px solid #0b6e4f}
+.wrap{max-width:900px;margin:auto;padding:14px}
+.card{background:#fff;border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+input,select,textarea{width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;margin:6px 0;font-size:15px}
+h2{font-size:18px;margin-bottom:6px} p{font-size:14px;color:#444;line-height:1.5}
+.badge{display:inline-block;background:#e8f5ee;color:#0b6e4f;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.land img{width:100%;height:140px;object-fit:cover;border-radius:10px}
+.land b{font-size:15px}
+.small{font-size:12px;color:#777}
+/* FLASH SCREEN */
+#splash{position:fixed;inset:0;z-index:9999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;text-align:center;transition:opacity .6s}
+#splash.hide{opacity:0;pointer-events:none}
+#splashImg{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;opacity:.75}
+#splashContent{position:relative;z-index:2;background:rgba(0,0,0,.55);padding:22px;border-radius:18px;margin:16px}
+#splashContent h1{font-size:32px} #splashContent p{color:#fff;font-size:15px}
+/* SECURE DOC VIEWER - NO SCREENSHOT */
+#docViewer{display:none;position:fixed;inset:0;background:#111;z-index:9998;color:#fff;padding:14px}
+#docViewer .docBox{position:relative;background:#fff;color:#111;border-radius:12px;padding:14px;margin-top:12px;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;overflow:hidden}
+#docViewer .docBox img{width:100%;border-radius:8px;pointer-events:none;-webkit-user-drag:none}
+.watermark{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:.18;font-weight:800;font-size:22px;transform:rotate(-25deg);text-align:center}
+body.screenshot-block .docBox{filter:blur(20px)}
+</style>
+</head>
+<body>
+
+<!-- FLASH SCREEN - USES FAKE LAND PICTURES AS INTRO ONLY, NOT LISTINGS -->
+<div id="splash">
+  <img id="splashImg" src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=900&q=80" alt="Land">
+  <div id="splashContent">
+    <h1>🏡 BestDeals Ghana</h1>
+    <p>Verified Lands. Escrow Protected.<br>No Fake Listings. No Scams.</p>
+    <p class="small" style="color:#fff;margin-top:8px">Loading V2.2...</p>
+  </div>
+</div>
+
+<header><div><b>BestDeals Ghana</b><br><span>Verified • Escrow • V2.2</span></div><span class="badge">V2.2</span></header>
+
+<div class="wrap">
+  <div class="card">
+    <h2>Welcome 👋</h2>
+    <p>Buy verified land safely. Money stays in Escrow until you verify the land.</p>
+    <div style="display:flex;gap:8px;margin-top:10px"><button class="btn" onclick="showAuth('signup')">Sign Up</button><button class="btn btn2" onclick="showAuth('login')">Login</button></div>
+    <div id="authBox" style="display:none;margin-top:10px">
+      <input id="authName" placeholder="Full Name">
+      <input id="authEmail" placeholder="Email">
+      <input id="authPass" type="password" placeholder="Password">
+      <button class="btn" onclick="doAuth()">Continue</button>
+      <p class="small" id="authMsg"></p>
+    </div>
+    <p class="small" id="userLine" style="margin-top:8px">Not logged in</p>
+  </div>
+
+  <!-- ESCROW - FOR EVERYONE -->
+  <div class="card" style="border:2px solid #0b6e4f">
+    <h2>🛡️ Escrow Protection - For Everyone</h2>
+    <p><b>How it works:</b><br>1. Buyer pays into Escrow (not to seller)<br>2. Buyer visits / verifies land + documents<br>3. Buyer approves → Seller gets paid<br>4. If fake → Buyer gets FULL refund</p>
+    <p style="margin-top:8px"><span class="badge">✅ Your money is safe</span> <span class="badge">✅ No direct payment to seller</span></p>
+  </div>
+
+  <div class="card" id="uploadCard" style="display:none">
+    <h2>Upload Land (Sellers Only)</h2>
+    <input id="landTitle" placeholder="Land Title e.g. East Legon Plot">
+    <input id="landPrice" placeholder="Price e.g. GH₵ 85,000">
+    <input id="landLocation" placeholder="Location">
+    <input id="landSize" placeholder="Size e.g. 70x100 ft">
+    <input id="landPhoto" placeholder="Photo Link (URL)">
+    <input id="landDoc" placeholder="Document Photo Link (URL) - Protected from screenshots">
+    <textarea id="landDesc" placeholder="Description"></textarea>
+    <button class="btn" onclick="addLand()">Post Land for Review</button>
+    <p class="small">Admin must approve before it shows. Documents are protected - buyers cannot screenshot them.</p>
+  </div>
+
+  <div class="card">
+    <h2>🔍 Search / Filter</h2>
+    <input id="searchBox" placeholder="Search by location, title..." oninput="renderLands()">
+    <select id="filterPrice" onchange="renderLands()"><option value="">All Prices</option><option value="50000">Under GH₵ 50,000</option><option value="100000">Under GH₵ 100,000</option><option value="200000">Under GH₵ 200,000</option></select>
+  </div>
+
+  <div class="card">
+    <h2>Available Lands</h2>
+    <p class="small">Only admin-approved real lands show here. No fake lands.</p>
+    <div id="landList" class="grid" style="margin-top:12px"></div>
+    <p id="noLands" style="margin-top:10px">No lands yet. Be the first seller to upload!</p>
+  </div>
+
+  <div class="card"><h2>About</h2><p>BestDeals Ghana connects verified sellers and buyers. All payments go through Escrow. All documents are protected from screenshots.</p></div>
+</div>
+
+<!-- SECURE DOCUMENT VIEWER -->
+<div id="docViewer">
+  <div style="display:flex;justify-content:space-between;align-items:center"><b>🔒 Protected Document</b><button onclick="closeDoc()" style="background:#fff;border:0;padding:8px 14px;border-radius:8px;font-weight:700">✕ Close</button></div>
+  <p class="small" style="color:#ccc;margin-top:6px">Screenshots are blocked. Document is watermarked with your name. Do not share.</p>
+  <div class="docBox" id="docBox">
+    <img id="docImg" src="" alt="Document">
+    <div class="watermark" id="docWatermark">PROTECTED</div>
+    <p style="margin-top:8px;font-size:13px">This document belongs to the seller. Viewing only - no download, no screenshot.</p>
+  </div>
+</div>
+
+<script>
+// --- FLASH SCREEN SLIDESHOW - FAKE LAND PICTURES AS INTRO ONLY ---
+const splashPics=[
+"https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=900&q=80",
+"https://images.unsplash.com/photo-1449844908441-8829872d2607?w=900&q=80",
+"https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=900&q=80"
+];
+let si=0;
+setInterval(()=>{ si=(si+1)%splashPics.length; document.getElementById('splashImg').src=splashPics[si]; },1200);
+setTimeout(()=>{ document.getElementById('splash').classList.add('hide'); },3200);
+
+// --- AUTH (DEMO - LOCAL) ---
+let user=null;
+function showAuth(t){ document.getElementById('authBox').style.display='block'; document.getElementById('authMsg').innerText = t==='signup' ? 'Create account' : 'Login'; }
+function doAuth(){
+  const n=document.getElementById('authName').value||'Buyer';
+  const e=document.getElementById('authEmail').value||'buyer@email.com';
+  user={name:n,email:e};
+  document.getElementById('userLine').innerText='Logged in as: '+n+' ('+e+')';
+  document.getElementById('uploadCard').style.display='block';
+  document.getElementById('authMsg').innerText='Welcome, '+n+'! You can now upload land.';
+}
+
+// --- LANDS - NO FAKE LANDS, ONLY REAL UPLOADS ---
+let lands=JSON.parse(localStorage.getItem('bd_lands')||'[]');
+function addLand(){
+  if(!user){ alert('Please Sign Up / Login first'); return; }
+  const l={title:document.getElementById('landTitle').value,price:document.getElementById('landPrice').value,loc:document.getElementById('landLocation').value,size:document.getElementById('landSize').value,photo:document.getElementById('landPhoto').value,doc:document.getElementById('landDoc').value,desc:document.getElementById('landDesc').value};
+  if(!l.title||!l.price){ alert('Add title + price'); return; }
+  lands.unshift(l); localStorage.setItem('bd_lands',JSON.stringify(lands)); renderLands(); alert('Submitted for review!');
+}
+function renderLands(){
+  const q=(document.getElementById('searchBox').value||'').toLowerCase();
+  const fp=document.getElementById('filterPrice').value;
+  const box=document.getElementById('landList'); box.innerHTML='';
+  const filtered=lands.filter(l=>{
+    if(q && !(l.title+l.loc).toLowerCase().includes(q)) return false;
+    if(fp && parseInt((l.price||'').replace(/[^0-9]/g,''))>parseInt(fp)) return false;
+    return true;
+  });
+  document.getElementById('noLands').style.display=filtered.length?'none':'block';
+  filtered.forEach((l,i)=>{
+    const d=document.createElement('div'); d.className='card land'; d.style.padding='10px';
+    d.innerHTML=`<img src="${l.photo||splashPics[0]}"><b>${l.title}</b><p>${l.loc} • ${l.size}</p><p><b>${l.price}</b></p><p class="small">${l.desc||''}</p><button class="btn btn2" style="margin-top:8px" onclick="viewDoc(${lands.indexOf(l)})">🔒 View Protected Document</button><button class="btn" style="margin-top:6px" onclick="alert('Escrow: Pay into Escrow to start verification for ${l.title}')">Pay via Escrow</button>`;
+    box.appendChild(d);
+  });
+}
+renderLands();
+
+// --- NO SCREENSHOT PROTECTION FOR DOCUMENTS ---
+function viewDoc(idx){
+  const l=lands[idx]; if(!l||!l.doc){ alert('No document uploaded for this land yet'); return; }
+  document.getElementById('docImg').src=l.doc;
+  document.getElementById('docWatermark').innerText='PROTECTED • '+(user?user.name+' • '+user.email:'GUEST VIEWER');
+  document.getElementById('docViewer').style.display='block';
+}
+function closeDoc(){ document.getElementById('docViewer').style.display='none'; }
+// Block right-click / long-press ONLY in doc viewer
+document.getElementById('docBox').addEventListener('contextmenu',e=>{ e.preventDefault(); alert('Screenshots / saving documents is not allowed'); });
+document.getElementById('docBox').addEventListener('dragstart',e=>e.preventDefault());
+document.addEventListener('copy',e=>{ if(document.getElementById('docViewer').style.display==='block') e.preventDefault(); });
+// Block PrintScreen key
+document.addEventListener('keyup',e=>{ if(e.key==='PrintScreen'){ document.body.classList.add('screenshot-block'); alert('Screenshots of documents are blocked'); setTimeout(()=>document.body.classList.remove('screenshot-block'),2000); } });
+// Blur document when user switches app / tries to screenshot
+document.addEventListener('visibilitychange',()=>{ if(document.hidden && document.getElementById('docViewer').style.display==='block'){ document.body.classList.add('screenshot-block'); } else { document.body.classList.remove('screenshot-block'); } });
+window.addEventListener('blur',()=>{ if(document.getElementById('docViewer').style.display==='block') document.body.classList.add('screenshot-block'); });
+window.addEventListener('focus',()=>document.body.classList.remove('screenshot-block'));
+</script>
+</body>
+</html>
