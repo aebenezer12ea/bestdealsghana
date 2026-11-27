@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BestDeals Ghana - V2.4.3</title>
+<title>BestDeals Ghana - V2.4.6</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,sans-serif}
 body{background:#f6f7f9;color:#111;padding-bottom:90px}
@@ -14,6 +14,8 @@ header{background:#0b6e4f;color:#fff;padding:14px 16px;display:flex;justify-cont
 .btnWA{background:#25D366;color:#fff;border:0;padding:11px;border-radius:10px;font-weight:700;cursor:pointer;width:100%}
 .btnLock{background:#f39c12;color:#fff;border:0;padding:11px;border-radius:10px;font-weight:700;cursor:pointer;width:100%}
 .btnGold{background:#f1c40f;color:#111;border:0;padding:11px;border-radius:10px;font-weight:700;cursor:pointer;width:100%}
+.btnSold{background:#27ae60;color:#fff;border:0;padding:10px;border-radius:10px;font-weight:700;cursor:pointer;width:100%}
+.btnGrey{background:#7f8c8d;color:#fff;border:0;padding:10px;border-radius:10px;font-weight:700;cursor:pointer;width:100%}
 .wrap{max-width:900px;margin:auto;padding:14px}
 .card{background:#fff;border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:0 2px 10px rgba(0,0,0,.06)}
 input,select,textarea{width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;margin:6px 0;font-size:15px}
@@ -44,10 +46,16 @@ body.screenshot-block .docBox{filter:blur(20px)}
 </style>
 </head>
 <body>
-<div id="splash"><img id="splashImg" src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=900&q=80"><div id="splashContent"><h1>🏡 BestDeals Ghana</h1><p>Verified Lands. Escrow Protected.<br>V2.4.3 - Bottom Nav + All Features</p><p class="small" style="color:#fff;margin-top:8px">Loading...</p></div></div>
-<header><div><b>BestDeals Ghana</b><br><span>Verified • Escrow • V2.4.3</span></div><span class="badge">V2.4.3</span></header>
+<div id="splash"><img id="splashImg" src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=900&q=80"><div id="splashContent"><h1>🏡 BestDeals Ghana</h1><p>Verified Lands. Escrow Protected.<br>V2.4.6 - Dashboard: Sold / Delete / Archive / Views</p><p class="small" style="color:#fff;margin-top:8px">Loading...</p></div></div>
+<header><div><b>BestDeals Ghana</b><br><span>Verified • Escrow • V2.4.6</span></div><span class="badge">V2.4.6</span></header>
 <div class="wrap">
-  <div class="card" id="homeSection"><h2>Welcome 👋</h2><p>Buy verified land safely. Money stays in Escrow until you verify.</p><div style="display:flex;gap:8px;margin-top:10px"><button class="btn" onclick="showAuth()">Sign Up / Login</button><button class="btn btn2" onclick="showAdmin()">👑 Admin Login</button></div><div id="authBox" style="display:none;margin-top:10px"><input id="authName" placeholder="Full Name"><input id="authEmail" placeholder="Email"><input id="authPass" type="password" placeholder="Password"><button class="btn" onclick="doAuth()">Continue</button><p class="small" id="authMsg"></p></div><div id="adminBox" style="display:none;margin-top:10px"><input id="adminCode" placeholder="Admin Code - use: BESTDEALS2026"><button class="btn" onclick="doAdmin()">Login as Admin</button></div><p class="small" id="userLine" style="margin-top:8px">Not logged in</p></div>
+  <div class="card" id="homeSection"><h2>Welcome 👋</h2><p>Buy verified land safely. Money stays in Escrow until you verify.</p><div style="display:flex;gap:8px;margin-top:10px"><button class="btn" onclick="showAuth()">Sign Up / Login</button></div><div id="authBox" style="display:none;margin-top:10px"><input id="authName" placeholder="Full Name"><input id="authEmail" placeholder="Email"><input id="authPass" type="password" placeholder="Password"><button class="btn" onclick="doAuth()">Continue</button><p class="small" id="authMsg"></p></div><div id="adminBox" style="display:none;margin-top:10px;border:2px solid #e67e22;padding:12px;border-radius:12px"><b>👑 Admin Login (Hidden)</b><input id="adminCode" placeholder="Enter Admin Code - BDGH31"><button class="btn" onclick="doAdmin()">Login as Admin</button><p class="small">Secret link only: ?admin - Admin can do everything + Dashboard</p></div><p class="small" id="userLine" style="margin-top:8px">Not logged in</p></div>
+  <div class="card" id="adminPanel" style="display:none;border:3px solid #e67e22;background:#fff8f0"><h2>👑 MY CONTROL ROOM - Dashboard</h2><p class="small">Only Admin sees this. You can do everything users can do + control here.</p><div style="display:flex;gap:8px;margin:10px 0;flex-wrap:wrap"><button class="btn" onclick="showDashTab('pending')">Pending</button><button class="btn btn2" onclick="showDashTab('veri')">Verification Orders</button><button class="btn btn2" onclick="showDashTab('all')">All Lands</button><button class="btnGold" onclick="showDashTab('archive')">📦 Archive / Records</button></div><p><b>Total:</b> <span id="statTotal">0</span> | <b>Pending:</b> <span id="statPending">0</span> | <b>Approved:</b> <span id="statApproved">0</span> | <b>Sold:</b> <span id="statSold">0</span> | <b>Deleted:</b> <span id="statDeleted">0</span> | <b>Veri Orders:</b> <span id="statVeri">0</span></p>
+  <div id="dashPending"><h3 style="margin-top:10px">Pending Lands - Approve / Reject</h3><div id="pendingList" style="margin-top:10px"></div></div>
+  <div id="dashVeri" style="display:none"><h3 style="margin-top:10px">Verification Orders</h3><div id="veriOrders"></div></div>
+  <div id="dashAll" style="display:none"><h3 style="margin-top:10px">All Lands - Full Control: Approve / Sold / Delete</h3><p class="small">Sold lands disappear from buyers. Deleted lands go to Archive with reason.</p><div id="allList"></div></div>
+  <div id="dashArchive" style="display:none"><h3 style="margin-top:10px">📦 ARCHIVE - Full Records - Review Anytime</h3><p class="small">Shows: Date of Approval | Date Sold (if sold) | Date Deleted + Why (if deleted) | Views (taps to open details)</p><input id="archiveSearch" placeholder="Search archive by title / location..." oninput="renderAdmin()"><div id="archiveList"></div></div>
+  </div>
   <div class="card" style="border:2px solid #0b6e4f"><h2>🛡️ Escrow Protection + Contact Rules</h2><p><b>📄 Documented Land:</b> Contact LOCKED 🔒 - Pay <b>GH₵ 20</b> to unlock<br><b>👨‍👩‍👧 Family / Stool Land:</b> Contact OPEN ✅ - WhatsApp FREE<br><b>Escrow:</b> Money stays in Escrow until you verify.</p></div>
   <div class="card" style="border:2px solid #f1c40f"><h2>✅ Verification Services - Don't Buy Blind!</h2><p>We verify the land for you BEFORE you pay in full:</p>
     <div class="veri"><b>🔍 Lands Commission Search - GHS 400</b><p class="small">Check true owner, no litigation, no double sale.</p><button class="btn" style="margin-top:6px" onclick="buyVerification('Lands Commission Search','GHS 400')">Buy Search - GHS 400</button></div>
@@ -55,10 +63,9 @@ body.screenshot-block .docBox{filter:blur(20px)}
     <div class="veri"><b>📝 Agreement - GHS 400</b><p class="small">Legal sale agreement signed by seller + witnesses.</p><button class="btn" style="margin-top:6px" onclick="buyVerification('Agreement','GHS 400')">Buy Agreement - GHS 400</button></div>
     <div class="veri best"><b>⭐ FULL PACKAGE - GHS 900 <span style="color:#27ae60">(Save GHS 100!)</span></b><p class="small">Search (400) + Zoning (200) + Agreement (400) = 1000, you pay only 900.</p><button class="btnGold" style="margin-top:6px" onclick="buyVerification('Full Package','GHS 900')">Buy Full Package - GHS 900 ⭐ BEST VALUE</button></div>
   </div>
-  <div class="card" id="adminPanel" style="display:none;border:2px solid #e67e22"><h2>👑 Admin Panel - Pending Lands</h2><div id="pendingList" style="margin-top:10px"></div><div style="margin-top:12px"><h3>Verification Orders</h3><div id="veriOrders"></div></div></div>
-  <div class="card" id="uploadCard" style="display:none"><h2>Upload Land (Sellers Only)</h2><input id="landTitle" placeholder="Land Title"><input id="landPrice" placeholder="Price e.g. GH₵ 85,000"><input id="landLocation" placeholder="Location"><input id="landSize" placeholder="Size e.g. 70x100 ft"><select id="landType"><option value="Documented">📄 Documented Land - Contact LOCKED (GH₵20 to unlock)</option><option value="Family">👨‍👩‍👧 Family Land - Contact OPEN (Free)</option><option value="Stool">👑 Stool Land - Contact OPEN (Free)</option></select><input id="sellerPhone" placeholder="Your WhatsApp Number e.g. 233201234567"><p><b>📸 Land Photo - Choose from Gallery:</b></p><input type="file" id="landPhotoFile" accept="image/*"><img id="photoPreview" style="width:100%;border-radius:10px;display:none;margin-top:6px"><p><b>📄 Document Photo - Protected:</b></p><input type="file" id="landDocFile" accept="image/*"><img id="docPreview" style="width:100%;border-radius:10px;display:none;margin-top:6px"><textarea id="landDesc" placeholder="Description"></textarea><button class="btn" onclick="addLand()">Submit for Admin Approval</button></div>
+  <div class="card" id="uploadCard" style="display:none"><h2>Upload Land (Sellers + Admin)</h2><p class="small" id="uploadNote">Login to upload.</p><input id="landTitle" placeholder="Land Title"><input id="landPrice" placeholder="Price e.g. GH₵ 85,000"><input id="landLocation" placeholder="Location"><input id="landSize" placeholder="Size e.g. 70x100 ft"><select id="landType"><option value="Documented">📄 Documented Land - Contact LOCKED (GH₵20 to unlock)</option><option value="Family">👨‍👩‍👧 Family Land - Contact OPEN (Free)</option><option value="Stool">👑 Stool Land - Contact OPEN (Free)</option></select><input id="sellerPhone" placeholder="Your WhatsApp Number e.g. 233201234567"><p><b>📸 Land Photo - Choose from Gallery:</b></p><input type="file" id="landPhotoFile" accept="image/*"><img id="photoPreview" style="width:100%;border-radius:10px;display:none;margin-top:6px"><p><b>📄 Document Photo - Protected:</b></p><input type="file" id="landDocFile" accept="image/*"><img id="docPreview" style="width:100%;border-radius:10px;display:none;margin-top:6px"><textarea id="landDesc" placeholder="Description"></textarea><button class="btn" onclick="addLand()">Submit for Admin Approval</button><p class="small" id="adminAutoNote" style="display:none;color:#e67e22;font-weight:700">Admin Note: Your land will still go to Pending first, then you approve it in your Dashboard.</p></div>
   <div class="card" id="browseSection"><h2>🔍 Search / Filter</h2><input id="searchBox" placeholder="Search by location, title..." oninput="renderLands()"><select id="filterPrice" onchange="renderLands()"><option value="">All Prices</option><option value="50000">Under GH₵ 50,000</option><option value="100000">Under GH₵ 100,000</option><option value="200000">Under GH₵ 200,000</option></select><select id="filterType" onchange="renderLands()"><option value="">All Land Types</option><option value="Documented">📄 Documented Only</option><option value="Family">👨‍👩‍👧 Family Only</option><option value="Stool">👑 Stool Only</option></select></div>
-  <div class="card"><h2>Available Lands - LIVE 🌍</h2><p class="small">Only Admin-approved lands show here.</p><p class="small" id="liveStatus">Connecting...</p><div id="landList" class="grid" style="margin-top:12px"></div><p id="noLands" style="margin-top:10px">No approved lands yet.</p></div>
+  <div class="card"><h2>Available Lands - LIVE 🌍</h2><p class="small">Only Admin-approved lands show here - Visible to EVERYONE. Sold / Deleted lands are HIDDEN.</p><p class="small" id="liveStatus">Connecting...</p><div id="landList" class="grid" style="margin-top:12px"></div><p id="noLands" style="margin-top:10px">No approved lands yet.</p></div>
   <div class="card" id="messagesSection"><h2>💬 Messages</h2><p>Your chats happen on WhatsApp with sellers. Tap any land > Chat Seller on WhatsApp.</p><p class="small">Unlocked contacts for Documented lands are saved on this phone.</p><button class="btn btn2" onclick="alert('Messages: Open a land and tap WhatsApp to chat seller.')">Open WhatsApp Chats</button></div>
   <div class="card" id="profileSection"><h2>👤 Profile</h2><p id="profileLine">Not logged in. Sign Up / Login above to upload land and unlock contacts.</p><button class="btn" onclick="showAuth()">Sign Up / Login</button></div>
 </div>
@@ -73,10 +80,19 @@ body.screenshot-block .docBox{filter:blur(20px)}
 <script>
 const DB_URL = "https://bestdealsghana-c3944-default-rtdb.firebaseio.com/lands";
 const VERI_URL = "https://bestdealsghana-c3944-default-rtdb.firebaseio.com/verification_orders";
+const ADMIN_CODE = "BDGH31";
 const splashPics=["https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=900&q=80","https://images.unsplash.com/photo-1449844908441-8829872d2607?w=900&q=80","https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=900&q=80"];
 let si=0; setInterval(()=>{si=(si+1)%splashPics.length;document.getElementById('splashImg').src=splashPics[si];},1200);
 setTimeout(()=>document.getElementById('splash').classList.add('hide'),3200);
+if(window.location.search.includes('admin')){ document.getElementById('adminBox').style.display='block'; }
 let user=null, isAdmin=false, lands=[], allEntries=[], photoData="", docData="", veriOrders=[];
+function fmtDate(ts){ if(!ts) return '—'; return new Date(ts).toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
+function showDashTab(t){
+  document.getElementById('dashPending').style.display = t==='pending'?'block':'none';
+  document.getElementById('dashVeri').style.display = t==='veri'?'block':'none';
+  document.getElementById('dashAll').style.display = t==='all'?'block':'none';
+  document.getElementById('dashArchive').style.display = t==='archive'?'block':'none';
+}
 function goNav(tab){
   document.querySelectorAll('.bottomNav button').forEach(b=>b.classList.remove('active'));
   document.getElementById('nav'+tab.charAt(0).toUpperCase()+tab.slice(1)).classList.add('active');
@@ -86,15 +102,29 @@ function goNav(tab){
   if(tab==='messages'){document.getElementById('messagesSection').scrollIntoView({behavior:'smooth'});}
   if(tab==='profile'){document.getElementById('profileSection').scrollIntoView({behavior:'smooth'});}
 }
-function showAuth(){document.getElementById('authBox').style.display='block';document.getElementById('adminBox').style.display='none';}
-function showAdmin(){document.getElementById('adminBox').style.display='block';document.getElementById('authBox').style.display='none';}
-function doAuth(){const n=document.getElementById('authName').value||'Buyer';const e=document.getElementById('authEmail').value||'buyer@email.com';user={name:n,email:e};document.getElementById('userLine').innerText='Logged in as: '+n+' ('+e+')';document.getElementById('profileLine').innerText='Logged in as: '+n+' ('+e+')';document.getElementById('uploadCard').style.display='block';document.getElementById('authMsg').innerText='Welcome, '+n+'!';}
-function doAdmin(){const c=document.getElementById('adminCode').value; if(c==='BESTDEALS2026'){isAdmin=true;document.getElementById('adminPanel').style.display='block';document.getElementById('userLine').innerText='Logged in as ADMIN 👑';alert('Welcome Admin!');renderAdmin();}else{alert('Wrong Admin Code');}}
+function showAuth(){document.getElementById('authBox').style.display='block';}
+function doAuth(){const n=document.getElementById('authName').value||'Buyer';const e=document.getElementById('authEmail').value||'buyer@email.com';user={name:n,email:e};document.getElementById('userLine').innerText='Logged in as: '+n+' ('+e+')'+(isAdmin?' 👑 ADMIN':'');document.getElementById('profileLine').innerText='Logged in as: '+n+' ('+e+')'+(isAdmin?' 👑 ADMIN - You can do everything + Dashboard':'');document.getElementById('uploadCard').style.display='block';document.getElementById('authMsg').innerText='Welcome, '+n+'!';}
+function doAdmin(){
+  const c=document.getElementById('adminCode').value;
+  if(c===ADMIN_CODE){
+    isAdmin=true; user={name:'ADMIN',email:'admin@bestdealsghana.com'};
+    document.getElementById('adminPanel').style.display='block';
+    document.getElementById('uploadCard').style.display='block';
+    document.getElementById('adminAutoNote').style.display='block';
+    document.getElementById('uploadNote').innerText='Logged in as ADMIN 👑 - You can upload like any user + control in Dashboard above.';
+    document.getElementById('userLine').innerText='Logged in as ADMIN 👑 - Full Access + Dashboard';
+    document.getElementById('profileLine').innerText='Logged in as ADMIN 👑 - You can do everything users can do + Dashboard (Control Room)';
+    alert('Welcome Admin! You can do EVERYTHING + Your Dashboard is now open at the top.');
+    document.getElementById('adminPanel').scrollIntoView({behavior:'smooth'});
+    renderAdmin();
+  } else { alert('Wrong Admin Code'); }
+}
 function fileToData(id,cb){const f=document.getElementById(id).files[0]; if(!f) return; const r=new FileReader(); r.onload=e=>cb(e.target.result); r.readAsDataURL(f);}
 document.getElementById('landPhotoFile').addEventListener('change',()=>fileToData('landPhotoFile',d=>{photoData=d;const p=document.getElementById('photoPreview');p.src=d;p.style.display='block';}));
 document.getElementById('landDocFile').addEventListener('change',()=>fileToData('landDocFile',d=>{docData=d;const p=document.getElementById('docPreview');p.src=d;p.style.display='block';}));
-function isUnlocked(key){ return localStorage.getItem('unlocked_'+key)==='yes'; }
+function isUnlocked(key){ if(isAdmin) return true; return localStorage.getItem('unlocked_'+key)==='yes'; }
 function unlockContact(key, title){
+  if(isAdmin){ alert('Admin: Contact is already open for you.'); renderLands(); return; }
   if(!user){alert('Please Sign Up / Login first to unlock contact');return;}
   if(confirm('Unlock contact for "'+title+'" for GH₵ 20?\n\nDocumented Land - Contact locked.\nFamily / Stool lands are FREE.')){
     localStorage.setItem('unlocked_'+key,'yes');
@@ -139,21 +169,70 @@ async function loadLands(){
 }
 async function addLand(){
   if(!user){alert('Please Sign Up / Login first');return;}
-  const l={title:document.getElementById('landTitle').value,price:document.getElementById('landPrice').value,loc:document.getElementById('landLocation').value,size:document.getElementById('landSize').value,type:document.getElementById('landType').value,phone:document.getElementById('sellerPhone').value,photo:photoData,doc:docData,desc:document.getElementById('landDesc').value,seller:user.name,status:'pending',time:Date.now()};
+  const l={title:document.getElementById('landTitle').value,price:document.getElementById('landPrice').value,loc:document.getElementById('landLocation').value,size:document.getElementById('landSize').value,type:document.getElementById('landType').value,phone:document.getElementById('sellerPhone').value,photo:photoData,doc:docData,desc:document.getElementById('landDesc').value,seller:user.name,status:'pending',views:0,createdAt:Date.now(),approvedAt:null,soldAt:null,deletedAt:null,deleteReason:'',time:Date.now()};
   if(!l.title||!l.price){alert('Add title + price');return;}
   if(!photoData){alert('Please choose a Land Photo from Gallery');return;}
   await fetch(DB_URL+'.json',{method:'POST',body:JSON.stringify(l)});
-  alert('✅ Submitted! Admin will review.'); loadLands();
+  alert('✅ Submitted! '+(isAdmin?'As Admin, go to your Dashboard to Approve it.':'Admin will review.')); loadLands();
 }
 async function setStatus(key,status){
-  await fetch(DB_URL+'/'+key+'.json',{method:'PATCH',body:JSON.stringify({status})});
-  alert(status==='approved'?'✅ Approved! Now visible to all buyers.':'❌ Rejected.'); loadLands();
+  let extra={};
+  if(status==='approved'){ extra={approvedAt:Date.now()}; }
+  await fetch(DB_URL+'/'+key+'.json',{method:'PATCH',body:JSON.stringify({status,...extra})});
+  alert(status==='approved'?'✅ Approved! Now visible to all buyers. Date of Approval saved.':'❌ Rejected.'); loadLands();
+}
+async function markSold(key,title){
+  if(!confirm('Confirm this land is SOLD?\n\n"'+title+'"\n\nIt will disappear from buyers and Date Sold will be saved in Archive.')) return;
+  await fetch(DB_URL+'/'+key+'.json',{method:'PATCH',body:JSON.stringify({status:'sold',soldAt:Date.now()})});
+  alert('✅ Marked as SOLD! Saved in Archive.'); loadLands();
+}
+async function deleteLand(key,title){
+  const reason = prompt('DELETE LAND: "'+title+'"\n\nWhy are you deleting it? Type the reason (e.g. Fishy documents, Double sale, Fake owner, Litigation):');
+  if(reason===null) return;
+  if(!reason.trim()){ alert('Please type WHY you are deleting it. This is saved in Archive.'); return; }
+  if(!confirm('Are you SURE to delete "'+title+'"?\nReason: '+reason+'\n\nIt will go to Archive, buyers will NOT see it.')) return;
+  await fetch(DB_URL+'/'+key+'.json',{method:'PATCH',body:JSON.stringify({status:'deleted',deletedAt:Date.now(),deleteReason:reason})});
+  alert('🗑️ Deleted! Reason saved in Archive.'); loadLands();
+}
+async function trackView(key){
+  try{
+    const cur = allEntries.find(([k,v])=>k===key);
+    const newViews = (cur?cur[1].views||0:0)+1;
+    await fetch(DB_URL+'/'+key+'.json',{method:'PATCH',body:JSON.stringify({views:newViews})});
+    if(cur) cur[1].views=newViews;
+    if(isAdmin) renderAdmin();
+  }catch(e){}
 }
 function renderAdmin(){
-  const box=document.getElementById('pendingList'); box.innerHTML='';
   const pending=allEntries.filter(([k,v])=>v.status==='pending');
+  const approved=allEntries.filter(([k,v])=>v.status==='approved');
+  const sold=allEntries.filter(([k,v])=>v.status==='sold');
+  const deleted=allEntries.filter(([k,v])=>v.status==='deleted');
+  document.getElementById('statTotal').innerText=allEntries.length;
+  document.getElementById('statPending').innerText=pending.length;
+  document.getElementById('statApproved').innerText=approved.length;
+  document.getElementById('statSold').innerText=sold.length;
+  document.getElementById('statDeleted').innerText=deleted.length;
+  document.getElementById('statVeri').innerText=veriOrders.length;
+  const box=document.getElementById('pendingList'); box.innerHTML='';
   if(!pending.length){box.innerHTML='<p>No pending lands.</p>';} else {
-    pending.forEach(([k,v])=>{const d=document.createElement('div');d.className='card';d.innerHTML=`<img src="${v.photo||''}" style="width:100%;height:120px;object-fit:cover;border-radius:8px"><b>${v.title} - ${v.type||'Documented'}</b><p>${v.loc} • ${v.price} • Seller: ${v.seller}</p><div style="display:flex;gap:8px;margin-top:8px"><button class="btn" onclick="setStatus('${k}','approved')">✅ Approve</button><button class="btnRed" onclick="setStatus('${k}','rejected')">❌ Reject</button></div>`;box.appendChild(d);});
+    pending.forEach(([k,v])=>{const d=document.createElement('div');d.className='card';d.innerHTML=`<img src="${v.photo||''}" style="width:100%;height:120px;object-fit:cover;border-radius:8px"><b>${v.title} - ${v.type||'Documented'}</b><p>${v.loc} • ${v.price} • Seller: ${v.seller} • 👀 Views: ${v.views||0}</p><div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap"><button class="btn" onclick="setStatus('${k}','approved')">✅ Approve</button><button class="btnRed" onclick="setStatus('${k}','rejected')">❌ Reject</button><button class="btnGrey" onclick="deleteLand('${k}','${(v.title||'').replace(/'/g,"")}')">🗑️ Delete + Why</button></div>`;box.appendChild(d);});
+  }
+  const allBox=document.getElementById('allList'); allBox.innerHTML='';
+  if(!allEntries.length){allBox.innerHTML='<p>No lands yet.</p>';} else {
+    allEntries.slice().reverse().forEach(([k,v])=>{
+      if(v.status==='deleted') return;
+      const d=document.createElement('div');d.className='card';d.innerHTML=`<b>${v.title} - ${v.status.toUpperCase()} ${v.status==='sold'?'✅ SOLD':''}</b><p>${v.loc} • ${v.price} • 👀 Views: ${v.views||0}</p><p class="small">Approved: ${fmtDate(v.approvedAt)} | Sold: ${fmtDate(v.soldAt)}</p><div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap"><button class="btn" onclick="setStatus('${k}','approved')">✅ Approve</button><button class="btnSold" onclick="markSold('${k}','${(v.title||'').replace(/'/g,"")}')">✅ Confirm Sold</button><button class="btnGrey" onclick="deleteLand('${k}','${(v.title||'').replace(/'/g,"")}')">🗑️ Delete + Why</button></div>`;allBox.appendChild(d);
+    });
+  }
+  const archBox=document.getElementById('archiveList'); archBox.innerHTML='';
+  const q=(document.getElementById('archiveSearch')?.value||'').toLowerCase();
+  let arch = allEntries.slice().reverse().filter(([k,v])=>{ if(!q) return true; return ((v.title||'')+(v.loc||'')).toLowerCase().includes(q); });
+  if(!arch.length){archBox.innerHTML='<p>No records yet.</p>';} else {
+    arch.forEach(([k,v])=>{
+      let statusLabel = v.status==='approved'?'🟢 LIVE / APPROVED':v.status==='pending'?'🟡 PENDING':v.status==='sold'?'✅ SOLD':v.status==='deleted'?'🗑️ DELETED':v.status;
+      const d=document.createElement('div');d.className='card';d.style.borderLeft='4px solid #e67e22';d.innerHTML=`<img src="${v.photo||''}" style="width:100%;height:90px;object-fit:cover;border-radius:8px"><b>${v.title} - ${statusLabel}</b><p>${v.loc} • ${v.price} • ${v.type||''} • Seller: ${v.seller||''}</p><p style="background:#f8f9fa;padding:8px;border-radius:8px;margin-top:6px"><b>📅 Date of Approval:</b> ${fmtDate(v.approvedAt)}<br><b>📅 Date Sold:</b> ${v.soldAt?fmtDate(v.soldAt):'— Not sold yet'}<br><b>📅 Date Deleted:</b> ${v.deletedAt?fmtDate(v.deletedAt):'— Not deleted'}<br><b>❓ Why Deleted:</b> ${v.deleteReason||'—'}<br><b>👀 Views (taps to open details):</b> ${v.views||0}</p>`;archBox.appendChild(d);
+    });
   }
   renderVeri();
 }
@@ -173,7 +252,7 @@ function renderLands(){
       contactBtn=`<button class="btnLock" style="margin-top:8px" onclick="unlockContact('${l._key}','${l.title.replace(/'/g,"")}')">🔒 Unlock Contact - Pay GH₵ 20</button><p class="small" style="text-align:center;margin-top:4px">Documented Land - Contact locked</p>`;
     }
     const typeLabel = type==='Documented' ? '📄 Documented Land - 🔒 Locked Contact' : type==='Family' ? '👨‍👩‍👧 Family Land - ✅ Free Contact' : '👑 Stool Land - ✅ Free Contact';
-    const d=document.createElement('div'); d.className='card land'; d.style.padding='10px'; d.innerHTML=`<img src="${l.photo||splashPics[0]}"><b>${l.title}</b><p>${l.loc} • ${l.size}</p><p><b>${l.price}</b></p><p class="small">${typeLabel}</p><p class="small">Seller: ${l.seller||''}</p><p class="small">${l.desc||''}</p>${contactBtn}<button class="btn btn2" style="margin-top:6px" onclick="viewDocByKey('${l._key}')">🔒 View Protected Document</button><button class="btnGold" style="margin-top:6px" onclick="buyVerificationForLand('${l._key}','${l.title.replace(/'/g,"")}')">✅ Verify This Land - From GHS 200</button><button class="btn" style="margin-top:6px" onclick="alert('Escrow: Pay into Escrow for ${l.title}')">Pay via Escrow</button>`; box.appendChild(d);
+    const d=document.createElement('div'); d.className='card land'; d.style.padding='10px'; d.innerHTML=`<img src="${l.photo||splashPics[0]}" onclick="trackView('${l._key}')" style="cursor:pointer"><b>${l.title}</b><p>${l.loc} • ${l.size}</p><p><b>${l.price}</b></p><p class="small">${typeLabel}</p><p class="small">Seller: ${l.seller||''} • 👀 ${l.views||0} views</p><p class="small">${l.desc||''}</p><button class="btn btn2" style="margin-top:6px" onclick="trackView('${l._key}');alert('Details: ${l.title} - ${l.loc} - ${l.price} - ${l.desc||''}')">👀 View Details - Tap to Count View</button>${contactBtn}<button class="btn btn2" style="margin-top:6px" onclick="viewDocByKey('${l._key}')">🔒 View Protected Document</button><button class="btnGold" style="margin-top:6px" onclick="buyVerificationForLand('${l._key}','${l.title.replace(/'/g,"")}')">✅ Verify This Land - From GHS 200</button><button class="btn" style="margin-top:6px" onclick="alert('Escrow: Pay into Escrow for ${l.title}')">Pay via Escrow</button>`; box.appendChild(d);
   });
 }
 function viewDocByKey(key){ const e=allEntries.find(([k,v])=>k===key); if(!e||!e[1].doc){alert('No document for this land');return;} document.getElementById('docImg').src=e[1].doc; document.getElementById('docWatermark').innerText='PROTECTED • '+(user?user.name+' • '+user.email:'GUEST'); document.getElementById('docViewer').style.display='block'; }
