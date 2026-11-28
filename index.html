@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BestDeals Ghana - V2.4.6</title>
+<title>BestDeals Ghana - V2.5</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,sans-serif}
 body{background:#f6f7f9;color:#111;padding-bottom:90px}
@@ -43,13 +43,18 @@ body.screenshot-block .docBox{filter:blur(20px)}
 .bottomNav button.sellBtn{color:#0b6e4f}
 .bottomNav button.sellBtn .ico{background:#0b6e4f;color:#fff;border-radius:10px;padding:2px 6px;font-size:20px;position:relative}
 .bottomNav button.sellBtn .dot{position:absolute;top:-4px;right:-4px;width:10px;height:10px;background:#0b6e4f;border-radius:50%;border:2px solid #fff}
+#adminLock{display:none;position:fixed;inset:0;z-index:10000;background:#0b6e4f;align-items:center;justify-content:center;padding:20px}
+#adminLock .lockCard{background:#fff;border-radius:18px;padding:24px;width:100%;max-width:380px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.3)}
 </style>
 </head>
 <body>
-<div id="splash"><img id="splashImg" src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=900&q=80"><div id="splashContent"><h1>🏡 BestDeals Ghana</h1><p>Verified Lands. Escrow Protected.<br>V2.4.6 - Dashboard: Sold / Delete / Archive / Views</p><p class="small" style="color:#fff;margin-top:8px">Loading...</p></div></div>
-<header><div><b>BestDeals Ghana</b><br><span>Verified • Escrow • V2.4.6</span></div><span class="badge">V2.4.6</span></header>
-<div class="wrap">
-  <div class="card" id="homeSection"><h2>Welcome 👋</h2><p>Buy verified land safely. Money stays in Escrow until you verify.</p><div style="display:flex;gap:8px;margin-top:10px"><button class="btn" onclick="showAuth()">Sign Up / Login</button></div><div id="authBox" style="display:none;margin-top:10px"><input id="authName" placeholder="Full Name"><input id="authEmail" placeholder="Email"><input id="authPass" type="password" placeholder="Password"><button class="btn" onclick="doAuth()">Continue</button><p class="small" id="authMsg"></p></div><div id="adminBox" style="display:none;margin-top:10px;border:2px solid #e67e22;padding:12px;border-radius:12px"><b>👑 Admin Login (Hidden)</b><input id="adminCode" placeholder="Enter Admin Code - BDGH31"><button class="btn" onclick="doAdmin()">Login as Admin</button><p class="small">Secret link only: ?admin - Admin can do everything + Dashboard</p></div><p class="small" id="userLine" style="margin-top:8px">Not logged in</p></div>
+<div id="splash"><img id="splashImg" src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=900&q=80"><div id="splashContent"><h1>🏡 BestDeals Ghana</h1><p>Verified Lands. Escrow Protected.<br>V2.5 - Secure Admin Lock</p><p class="small" style="color:#fff;margin-top:8px">Loading...</p></div></div>
+
+<div id="adminLock"><div class="lockCard"><div style="font-size:48px">🔒</div><h2 style="margin-top:8px">Admin Login</h2><p class="small">BestDeals Ghana - Control Room<br>Enter your Admin Code to continue.</p><input id="adminCode" type="password" placeholder="Enter Admin Code" autocomplete="off"><button class="btn" onclick="doAdmin()">Login as Admin</button><p class="small" id="adminError" style="color:#c0392b;font-weight:700;margin-top:8px"></p><p class="small" style="margin-top:10px"><a href="./" style="color:#0b6e4f">← Back to Home (Buyer View)</a></p></div></div>
+
+<header id="mainHeader"><div><b>BestDeals Ghana</b><br><span>Verified • Escrow • V2.5</span></div><span class="badge">V2.5</span></header>
+<div class="wrap" id="mainWrap">
+  <div class="card" id="homeSection"><h2>Welcome 👋</h2><p>Buy verified land safely. Money stays in Escrow until you verify.</p><div style="display:flex;gap:8px;margin-top:10px"><button class="btn" onclick="showAuth()">Sign Up / Login</button></div><div id="authBox" style="display:none;margin-top:10px"><input id="authName" placeholder="Full Name"><input id="authEmail" placeholder="Email"><input id="authPass" type="password" placeholder="Password"><button class="btn" onclick="doAuth()">Continue</button><p class="small" id="authMsg"></p></div><p class="small" id="userLine" style="margin-top:8px">Not logged in</p></div>
   <div class="card" id="adminPanel" style="display:none;border:3px solid #e67e22;background:#fff8f0"><h2>👑 MY CONTROL ROOM - Dashboard</h2><p class="small">Only Admin sees this. You can do everything users can do + control here.</p><div style="display:flex;gap:8px;margin:10px 0;flex-wrap:wrap"><button class="btn" onclick="showDashTab('pending')">Pending</button><button class="btn btn2" onclick="showDashTab('veri')">Verification Orders</button><button class="btn btn2" onclick="showDashTab('all')">All Lands</button><button class="btnGold" onclick="showDashTab('archive')">📦 Archive / Records</button></div><p><b>Total:</b> <span id="statTotal">0</span> | <b>Pending:</b> <span id="statPending">0</span> | <b>Approved:</b> <span id="statApproved">0</span> | <b>Sold:</b> <span id="statSold">0</span> | <b>Deleted:</b> <span id="statDeleted">0</span> | <b>Veri Orders:</b> <span id="statVeri">0</span></p>
   <div id="dashPending"><h3 style="margin-top:10px">Pending Lands - Approve / Reject</h3><div id="pendingList" style="margin-top:10px"></div></div>
   <div id="dashVeri" style="display:none"><h3 style="margin-top:10px">Verification Orders</h3><div id="veriOrders"></div></div>
@@ -69,7 +74,7 @@ body.screenshot-block .docBox{filter:blur(20px)}
   <div class="card" id="messagesSection"><h2>💬 Messages</h2><p>Your chats happen on WhatsApp with sellers. Tap any land > Chat Seller on WhatsApp.</p><p class="small">Unlocked contacts for Documented lands are saved on this phone.</p><button class="btn btn2" onclick="alert('Messages: Open a land and tap WhatsApp to chat seller.')">Open WhatsApp Chats</button></div>
   <div class="card" id="profileSection"><h2>👤 Profile</h2><p id="profileLine">Not logged in. Sign Up / Login above to upload land and unlock contacts.</p><button class="btn" onclick="showAuth()">Sign Up / Login</button></div>
 </div>
-<div class="bottomNav">
+<div class="bottomNav" id="mainNav">
   <button id="navHome" class="active" onclick="goNav('home')"><span class="ico">🏠</span>Home</button>
   <button id="navBrowse" onclick="goNav('browse')"><span class="ico">🔍</span>Browse</button>
   <button id="navSell" class="sellBtn" onclick="goNav('sell')"><span class="ico">+<span class="dot"></span></span>Sell</button>
@@ -84,8 +89,15 @@ const ADMIN_CODE = "BDGH31";
 const splashPics=["https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=900&q=80","https://images.unsplash.com/photo-1449844908441-8829872d2607?w=900&q=80","https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=900&q=80"];
 let si=0; setInterval(()=>{si=(si+1)%splashPics.length;document.getElementById('splashImg').src=splashPics[si];},1200);
 setTimeout(()=>document.getElementById('splash').classList.add('hide'),3200);
-if(window.location.search.includes('admin')){ document.getElementById('adminBox').style.display='block'; }
 let user=null, isAdmin=false, lands=[], allEntries=[], photoData="", docData="", veriOrders=[];
+let isAdminPage = window.location.search.includes('admin');
+if(isAdminPage){
+  document.getElementById('mainHeader').style.display='none';
+  document.getElementById('mainWrap').style.display='none';
+  document.getElementById('mainNav').style.display='none';
+  document.getElementById('adminLock').style.display='flex';
+  document.getElementById('splash').style.display='none';
+}
 function fmtDate(ts){ if(!ts) return '—'; return new Date(ts).toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
 function showDashTab(t){
   document.getElementById('dashPending').style.display = t==='pending'?'block':'none';
@@ -108,16 +120,19 @@ function doAdmin(){
   const c=document.getElementById('adminCode').value;
   if(c===ADMIN_CODE){
     isAdmin=true; user={name:'ADMIN',email:'admin@bestdealsghana.com'};
+    document.getElementById('adminLock').style.display='none';
+    document.getElementById('mainHeader').style.display='flex';
+    document.getElementById('mainWrap').style.display='block';
+    document.getElementById('mainNav').style.display='flex';
     document.getElementById('adminPanel').style.display='block';
     document.getElementById('uploadCard').style.display='block';
     document.getElementById('adminAutoNote').style.display='block';
     document.getElementById('uploadNote').innerText='Logged in as ADMIN 👑 - You can upload like any user + control in Dashboard above.';
     document.getElementById('userLine').innerText='Logged in as ADMIN 👑 - Full Access + Dashboard';
     document.getElementById('profileLine').innerText='Logged in as ADMIN 👑 - You can do everything users can do + Dashboard (Control Room)';
-    alert('Welcome Admin! You can do EVERYTHING + Your Dashboard is now open at the top.');
     document.getElementById('adminPanel').scrollIntoView({behavior:'smooth'});
     renderAdmin();
-  } else { alert('Wrong Admin Code'); }
+  } else { document.getElementById('adminError').innerText='❌ Wrong Code. Try again.'; document.getElementById('adminCode').value=''; }
 }
 function fileToData(id,cb){const f=document.getElementById(id).files[0]; if(!f) return; const r=new FileReader(); r.onload=e=>cb(e.target.result); r.readAsDataURL(f);}
 document.getElementById('landPhotoFile').addEventListener('change',()=>fileToData('landPhotoFile',d=>{photoData=d;const p=document.getElementById('photoPreview');p.src=d;p.style.display='block';}));
